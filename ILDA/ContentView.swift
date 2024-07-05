@@ -48,6 +48,7 @@ struct ContentView: View {
             //MARK: Horizontal Sliders
             VStack {
                 Text("=== Volume ===")
+                //Min slider
                 HStack {
                     Text("Min")
                     Slider(value: $min, in: 0.0...1.0, step: 0.1) { _ in
@@ -56,7 +57,7 @@ struct ContentView: View {
                     Text("\(Int(min * 10))/10")
                 }
                 .padding()
-                
+                //Max slider
                 HStack {
                     Text("Max")
                     Slider(value: $max, in: 0.0...1.0, step: 0.1) { _ in
@@ -90,16 +91,15 @@ struct ContentView: View {
                             }
                             isPlaying = !isPlaying
                         }) {
-                            Text(isPlaying ? "Pause" : "Play")
-                                .padding(EdgeInsets(top: 10, leading: 40, bottom: 10, trailing: 40))
-                                .background(Color.blue)
-                                .foregroundColor(.white)
-                                .cornerRadius(8)
-                        }
+                        Text(isPlaying ? "Pause" : "Play")
+                            .padding(EdgeInsets(top: 10, leading: 40, bottom: 10, trailing: 40))
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                    }
                         .alert(isPresented: $showingAlert) {
                             Alert(title: Text("Important message"), message: Text("Max cann't be equal or smaller then Min"), dismissButton: .default(Text("Got it!")))
                         }
-                        
                         Spacer(minLength: 40)
                         Button(action: {
                             isPlaying = false
