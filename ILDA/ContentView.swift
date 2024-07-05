@@ -17,6 +17,7 @@ struct ContentView: View {
     @State private var selectedOption = "Ocean_waves"
     
     let options = ["Lullaby", "Ocean_waves", "Rain_sound", "Sweet_dreams"]
+    
     let audioController = AudioController()
     
     var body: some View {
@@ -175,7 +176,6 @@ struct ContentView: View {
             audioController.stopTone()
         }
     }
-    
 }
 
 #Preview {
