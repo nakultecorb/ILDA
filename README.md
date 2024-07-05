@@ -1,1 +1,2 @@
 # ILDA
+ILDA is an iOS app for the users auditory patterns with the difference in audio  intensity between two ears, which is called the interaural level difference  (ILD). ILDs are caused by the head and body providing an acoustic "shadow" for the  ear farther away from the sound source. Let's say user choose one song. For the duration of this song, the audio intensity  within earbuds should periodically change: louder in one, quite in another. The  frequency of this modulation should be modifiable by user.
