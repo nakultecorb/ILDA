@@ -14,6 +14,7 @@ struct ContentView: View {
     @State private var frequency: Double = 1.0
     @State private var isPlaying: Bool = false
     @State private var showingAlert = false
+    @State private var showingAlertForChangeIntensity = false
     @State private var selectedOption = "Ocean_waves"
     
     let options = ["Lullaby", "Ocean_waves", "Rain_sound", "Sweet_dreams"]
@@ -52,18 +53,35 @@ struct ContentView: View {
                 //Min slider
                 HStack {
                     Text("Min")
-                    Slider(value: $min, in: 0.0...1.0, step: 0.1) { _ in
-                        audioController.setMinMaxIntensity(min, max: max)
+                    Slider(value: $min, in: 0.0...1.0, step: 0.1) { isEditing in
+                        if isEditing{
+                            audioController.pauseTimer()
+                        }
+                        else {
+                            if min > max{
+                                min = max
+                            }
+                            audioController.setMinMaxIntensity(self.min, max: self.max, isPlaying: isPlaying)
+                        }
                     }
+                    
                     Text("\(Int(min * 10))/10")
                 }
                 .padding()
+                
                 //Max slider
                 HStack {
                     Text("Max")
-                    Slider(value: $max, in: 0.0...1.0, step: 0.1) { _ in
-                        audioController.setMinMaxIntensity(min, max: max)
-                    }
+                    Slider(value: $max, in: 0.0...1.0, step: 0.1) { isEditing in
+                        if isEditing{
+                            audioController.pauseTimer()
+                        }
+                        else {
+                            if min > max{
+                                max = min
+                            }
+                            audioController.setMinMaxIntensity(self.min, max: self.max, isPlaying: isPlaying)
+                        }                  }
                     Text("\(Int(max * 10))/10")
                 }
                 .padding()
@@ -73,7 +91,7 @@ struct ContentView: View {
                     HStack {
                         Spacer()
                         Button(action: {
-                            if max <= min{
+                            if max < min{
                                 showingAlert = true
                             }
                             else{
