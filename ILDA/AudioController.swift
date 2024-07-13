@@ -21,7 +21,7 @@ class AudioController {
     var min: Double = 0.3
     
     var volumeFlow: VolumeFlow = .down
-    var stepValue: Double = 0.10
+    var stepValue: Double = 0.1
     
     var left: Double = 0.7
     var right: Double = 0.3
@@ -123,6 +123,12 @@ class AudioController {
     func pauseTone(){
         leftPlayerNode.pause()
         rightPlayerNode.pause()
+        stopTimer()
+    }
+    func resumeTone(){
+        leftPlayerNode.play()
+        rightPlayerNode.play()
+        resetTimer(self.frequency)
     }
     
     func setFrequency(_ frequency: Double){
@@ -135,23 +141,31 @@ class AudioController {
         timer = nil
     }
     
+    func pauseTimer(){
+        timer?.invalidate()
+        timer = nil
+    }
+    
     private func resetTimer(_ frequency: Double){
         let diff = (max - min)/stepValue
         let ffFreq = frequency*diff
-        let timerFrequency = 1/ffFreq
+        if ffFreq == 0{return}
+        let timerFrequency = 1/(ffFreq)
         print("timerFrequency: \(timerFrequency)")
         stopTimer()
         timer = Timer.scheduledTimer(timeInterval: timerFrequency, target: self, selector: #selector(self.timerHandler), userInfo: nil, repeats: true)
     }
     
-    func setMinMaxIntensity(_ min: Double, max: Double){
+    func setMinMaxIntensity(_ min: Double, max: Double, isPlaying: Bool = false){
+        
         self.min = min
         self.max = max
-        self.left = max
-        self.right = min
-        self.volumeFlow = .down
+        
+        if isPlaying{
+            resetTimer(self.frequency)
+        }
+        
     }
-    
     
     private func setVolume(leftVolume: Double? = nil, rightVolume: Double? = nil) {
         if let leftVolume = leftVolume {
@@ -169,24 +183,36 @@ class AudioController {
         }
     }
 
+    func forceSetTheVolumeFlow(){
+        if left < min || right > max{
+            volumeFlow = .up
+        }
+        else if left > max || right < min{
+            volumeFlow = .down
+        }
+    }
+    
     @objc func timerHandler(){
         if volumeFlow == .down{ // down flow
-            left -= stepValue
-            right += stepValue
+            left = Swift.max(min, (left-stepValue)) // -= stepValue
+            right = Swift.min(max, right+stepValue) //+= stepValue
             setVolume(leftVolume: left, rightVolume: right)
-            if left <= min || right >= max{
+            if left == min && right == max{
                 volumeFlow = .up
             }
         }
         else{
-            left += stepValue
-            right -= stepValue
+//            left += stepValue
+//            right -= stepValue
+            left = Swift.min(max, (left+stepValue))
+            right = Swift.max(min, right-stepValue)
             setVolume(leftVolume: left, rightVolume: right)
             if left >= max || right <= min{
                 volumeFlow = .down
             }
         }
-        print("left:  \(String(format: "%0.1f", left)) right: \(String(format: "%0.1f", right))")
+        
+        print("left:  \(String(format: "%0.1f", left)) right: \(String(format: "%0.1f", right)) volume flow : \(volumeFlow), min: \(String(format: "%0.1f", min)) max: \(String(format: "%0.1f", max))")
     }
     
     func configureAudioSession() {
